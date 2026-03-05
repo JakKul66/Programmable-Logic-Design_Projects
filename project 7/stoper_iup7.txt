@@ -1,0 +1,155 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity stoper is
+    Port ( 
+        digit_i : out STD_LOGIC_VECTOR (31 downto 0);
+        rst_i : in STD_LOGIC := '0';
+        start_stop_button_i : in STD_LOGIC;
+        clk_i : in STD_LOGIC := '0');
+end stoper;
+
+architecture Behavioral of stoper is
+signal overflow : BOOLEAN := false;
+signal licznik_dla_3 : NATURAL := 0;
+signal poprzedni_stan : STD_LOGIC := '0';
+signal blokada_przycisku : NATURAL := 0; 
+signal stan_wewnetrzny : NATURAL := 0;
+signal clock : NATURAL := 0;
+signal cyfra0 : NATURAL := 0;
+signal cyfra1 : NATURAL := 0;
+signal cyfra2 : NATURAL := 0;
+signal cyfra3 : NATURAL := 0;
+
+
+function przydziel_seg (input : INTEGER) return STD_LOGIC_VECTOR is
+    variable segment : STD_LOGIC_VECTOR (6 downto 0);
+    begin        
+        case input is
+            when 0 => segment := "0000001";
+            when 1 => segment := "1001111";
+            when 2 => segment := "0010010";
+            when 3 => segment := "0000110";
+            when 4 => segment := "1001100";
+            when 5 => segment := "0100100";
+            when 6 => segment := "0100000";
+            when 7 => segment := "0001111";
+            when 8 => segment := "0000000";
+            when 9 => segment := "0000100";
+            when 10 => segment := "1111110";
+            when others => segment := "1111111";               
+        end case;
+    return segment;        
+end function przydziel_seg;
+
+
+begin
+
+digit_i(0) <= '1';
+digit_i(8) <= '1';
+digit_i(16) <= '0';
+digit_i(24) <= '1';
+
+
+
+obsluga : process(clk_i, rst_i, start_stop_button_i)
+begin
+    if rst_i = '1' then
+        stan_wewnetrzny <= 0;
+        blokada_przycisku <= 0;
+        poprzedni_stan <= '0';
+        clock <= 0;
+        overflow <= false;
+        
+        cyfra0 <= 0;
+        cyfra1 <= 0;
+        cyfra2 <= 0;
+        cyfra3 <= 0;
+        
+        digit_i(7 downto 1) <= przydziel_seg(cyfra0);        
+        digit_i(15 downto 9) <= przydziel_seg(cyfra1);
+        digit_i(23 downto 17) <= przydziel_seg(cyfra2);
+        digit_i(31 downto 25) <= przydziel_seg(cyfra3);
+        
+        
+    elsif rising_edge(clk_i) then
+        if start_stop_button_i = '1' and poprzedni_stan = '0' and blokada_przycisku = 0 then
+            blokada_przycisku <= 1;
+            stan_wewnetrzny <= stan_wewnetrzny + 1;
+        end if;
+        
+        if blokada_przycisku /= 0 then 
+            blokada_przycisku <= blokada_przycisku + 1;
+            if blokada_przycisku = 5000000 then 
+                blokada_przycisku <= 0;
+            end if;
+        end if;
+        
+        if stan_wewnetrzny = 1 then 
+            clock <= clock + 1;
+            
+            if clock = 1000000 then
+                if overflow = false then
+                    clock <= 0;
+                    cyfra0 <= cyfra0 + 1;
+                end if;
+                if cyfra0 = 9 then
+                    cyfra0 <= 0;
+                    cyfra1 <= cyfra1 + 1;
+                    
+                    if cyfra1 = 9 then
+                        cyfra1 <= 0;
+                        cyfra2 <= cyfra2 + 1;
+                    
+                        if cyfra2 = 9 then
+                            cyfra2 <= 0;
+                            cyfra3 <= cyfra3 + 1;
+                            
+                            if cyfra3 = 5 then
+                                cyfra3 <= 10;
+                                cyfra2 <= 10;
+                                cyfra1 <= 10;
+                                cyfra0 <= 10;
+                                                             
+                                overflow <= true;
+                                
+                            end if;
+                        end if;         
+                    end if;
+                end if;
+                
+                digit_i(7 downto 1) <= przydziel_seg(cyfra0);
+                digit_i(15 downto 9) <= przydziel_seg(cyfra1);
+                digit_i(23 downto 17) <= przydziel_seg(cyfra2);
+                digit_i(31 downto 25) <= przydziel_seg(cyfra3);
+            end if;
+        end if;
+        
+        if stan_wewnetrzny = 3 then
+            cyfra0 <= 0;
+            cyfra1 <= 0;
+            cyfra2 <= 0;
+            cyfra3 <= 0;
+            
+            digit_i(7 downto 1) <= przydziel_seg(cyfra0);
+            digit_i(15 downto 9) <= przydziel_seg(cyfra1);
+            digit_i(23 downto 17) <= przydziel_seg(cyfra2);
+            digit_i(31 downto 25) <= przydziel_seg(cyfra3);
+            
+            licznik_dla_3 <= licznik_dla_3 + 1;
+            
+            if licznik_dla_3 = 10 then
+                licznik_dla_3 <= 0;
+                blokada_przycisku <= 1;
+                stan_wewnetrzny <= 0;
+            end if;
+            
+            clock <= 0;
+            
+            overflow <= false;
+        end if;
+        
+        poprzedni_stan <= start_stop_button_i;
+    end if;
+end process obsluga;
+end Behavioral;

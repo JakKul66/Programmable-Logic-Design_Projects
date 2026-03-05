@@ -1,0 +1,54 @@
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+entity display is
+    generic (stala_czasowa : INTEGER :=  100000);
+    Port ( 
+        digit_i : in STD_LOGIC_VECTOR (31 downto 0);
+        led7_an_o : out STD_LOGIC_VECTOR (3 downto 0);
+        led7_seg_o : out STD_LOGIC_VECTOR (7 downto 0);
+        rst_i : in STD_LOGIC := '0';
+        clk_i : in STD_LOGIC := '0');
+end display;
+
+architecture Behavioral of display is
+    signal segment : NATURAL := 0;
+    signal licznik : NATURAL := 0;
+    alias Cyfra0 : STD_LOGIC_VECTOR(7 downto 0) is digit_i(7 downto 0);
+    alias Cyfra1 : STD_LOGIC_VECTOR(7 downto 0) is digit_i(15 downto 8);
+    alias Cyfra2 : STD_LOGIC_VECTOR(7 downto 0) is digit_i(23 downto 16);
+    alias Cyfra3 : STD_LOGIC_VECTOR(7 downto 0) is digit_i(31 downto 24);   
+begin 
+
+    step : process(clk_i)         
+    begin
+        if rising_edge(clk_i) then
+            case segment is
+                when 0 => 
+                    led7_an_o <= "1110";
+                    led7_seg_o <= cyfra0;
+                when 1 => 
+                    led7_an_o <= "1101";
+                    led7_seg_o <= cyfra1;
+                when 2 =>
+                    led7_an_o <= "1011";
+                    led7_seg_o <= cyfra2;
+                when 3 => 
+                    led7_an_o <= "0111";
+                    led7_seg_o <= cyfra3;
+                when others =>
+                    led7_an_o <= "1111";
+            end case;
+            
+            licznik <= licznik + 1;
+            
+            if licznik = stala_czasowa then
+                licznik <= 0;
+                segment <= segment + 1;
+                if segment = 3 then
+                    segment <= 0;
+                end if;
+            end if;
+        end if;
+    end process step;
+end Behavioral;
