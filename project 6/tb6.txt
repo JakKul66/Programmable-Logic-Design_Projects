@@ -1,0 +1,158 @@
+----------------------------------------------------------------------------------
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date: 13.03.2025 20:20:48
+-- Design Name: 
+-- Module Name: tb - Behavioral
+-- Project Name: 
+-- Target Devices: 
+-- Tool Versions: 
+-- Description: 
+-- 
+-- Dependencies: 
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity tb is
+--  Port ( );
+end tb;
+
+
+
+architecture Behavioral of tb is
+component memory
+    Port (
+        clk_i : in std_logic;
+        sw_i : in std_logic_vector(7 downto 0);
+        btn_i : in std_logic_vector(3 downto 0);
+        digit_i : out std_logic_vector(31 downto 0)
+        );
+end component;
+
+
+
+component display
+    Port (
+        
+       
+        clk_i : in std_logic;
+        
+        digit_i : in std_logic_vector(31 downto 0);
+        
+         
+         
+         led7_an_o : out STD_LOGIC_VECTOR (3 downto 0);
+
+         led7_seg_o : out STD_LOGIC_VECTOR (7 downto 0)
+         );
+         
+         
+   end component;  
+   
+ component top is
+    
+    Port ( clk_i : in STD_LOGIC;
+
+           btn_i : in STD_LOGIC_VECTOR (3 downto 0);
+
+           sw_i : in STD_LOGIC_VECTOR (7 downto 0);
+
+           led7_an_o : out STD_LOGIC_VECTOR (3 downto 0);
+
+           led7_seg_o : out STD_LOGIC_VECTOR (7 downto 0));
+
+end component;    
+    signal clk_i        : std_logic := '0';      
+          
+    signal sw_i         : std_logic_vector(7 downto 0) := (others => '0'); 
+    signal btn_i        : std_logic_vector(3 downto 0) := "0000"; 
+    signal digit_i      : std_logic_vector(31 downto 0) := (others => '1'); 
+    signal led7_an_o    : std_logic_vector(3 downto 0);  
+    signal led7_seg_o   : std_logic_vector(7 downto 0);  
+         
+begin
+u1: top port map (
+        clk_i => clk_i,
+        btn_i => btn_i,
+        sw_i => sw_i,
+        led7_an_o => led7_an_o,
+        led7_seg_o => led7_seg_o
+    );
+
+u2: memory port map (
+        clk_i => clk_i,
+        sw_i => sw_i,
+        btn_i => btn_i,
+        digit_i => digit_i
+    );
+
+    u3: display port map (
+        clk_i => clk_i,
+        digit_i => digit_i,
+        
+        led7_an_o => led7_an_o,
+        led7_seg_o => led7_seg_o
+    );
+process
+begin 
+clk_i <= not(clk_i);
+wait for 5 ns;
+end process;
+
+process
+begin
+
+sw_i(7 downto 4) <= "0011";
+wait for 1 ms;
+sw_i(3 downto 0) <= "0001";
+wait for 1 ms;
+btn_i(3) <= '1';
+wait for 1 ms;
+btn_i(3) <= '0';
+wait for 1 ms;
+sw_i(7 downto 4) <= "1111";
+sw_i(3 downto 0) <= "1000";
+wait for 1 ms;
+btn_i(2) <= '1';
+wait for 1 ms;
+btn_i(2) <= '0';
+wait for 1 ms;
+sw_i(3 downto 0) <= "1100";
+wait for 1 ms;
+btn_i(1) <= '1';
+wait for 1 ms;
+btn_i(1) <= '0';
+wait for 1 ms;
+sw_i(7 downto 4) <= "0000";
+sw_i(3 downto 0) <= "1111";
+wait for 1ms;
+btn_i(0) <= '1';
+wait for 1 ms;
+btn_i(0) <= '0';
+wait for 2 ms;
+end process;
+
+
+
+
+
+
+end Behavioral;
