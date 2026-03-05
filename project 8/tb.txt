@@ -1,0 +1,1275 @@
+
+-- Company: 
+-- Engineer: 
+-- 
+-- Create Date: 16.03.2025 21:45:19
+-- Design Name: 
+-- Module Name: tb - Behavioral
+-- Project Name: 
+-- Target Devices: 
+-- Tool Versions: 
+-- Description: 
+-- 
+-- Dependencies: 
+-- 
+-- Revision:
+-- Revision 0.01 - File Created
+-- Additional Comments:
+-- 
+----------------------------------------------------------------------------------
+
+
+library IEEE;
+use IEEE.STD_LOGIC_1164.ALL;
+use IEEE.NUMERIC_STD.ALL;
+-- Uncomment the following library declaration if using
+-- arithmetic functions with Signed or Unsigned values
+--use IEEE.NUMERIC_STD.ALL;
+
+-- Uncomment the following library declaration if instantiating
+-- any Xilinx leaf cells in this code.
+--library UNISIM;
+--use UNISIM.VComponents.all;
+
+entity tb is
+--  Port ( );
+end tb;
+
+architecture Behavioral of tb is
+
+component mouse
+    Port (
+        clk_i : in STD_LOGIC;
+
+           ps2_clk_i : in STD_LOGIC;
+
+           ps2_data_i : in STD_LOGIC;
+           
+           digit_i     : out STD_LOGIC_VECTOR(31 downto 0)
+        );
+
+ end component;
+
+component display
+    Port (
+        
+       
+        clk_i : in std_logic;
+        
+        digit_i : in std_logic_vector(31 downto 0);
+        
+         
+         
+         led7_an_o : out STD_LOGIC_VECTOR (3 downto 0);
+
+         led7_seg_o : out STD_LOGIC_VECTOR (7 downto 0)
+         );
+         end component;
+
+component top is
+
+    Port ( clk_i : in STD_LOGIC;
+
+           ps2_clk_i : in STD_LOGIC;
+
+           ps2_data_i : in STD_LOGIC;
+
+           led7_an_o : out STD_LOGIC_VECTOR (3 downto 0);
+
+           led7_seg_o : out STD_LOGIC_VECTOR (7 downto 0));
+
+end component;
+signal clk_i : std_logic := '0';
+signal ps2_clk_i : std_logic := '1'; -- Inicjalny stan zegara PS2
+signal ps2_data_i : std_logic := '1';  
+
+signal led7_an_o    : std_logic_vector(3 downto 0);  
+signal led7_seg_o   : std_logic_vector(7 downto 0);  
+signal digit_i      : std_logic_vector(31 downto 0);
+
+begin
+u1: top port map (
+ clk_i => clk_i,
+ ps2_clk_i => ps2_clk_i,
+ ps2_data_i => ps2_data_i,
+ 
+ led7_an_o => led7_an_o,
+ led7_seg_o => led7_seg_o
+ 
+);
+u2 : mouse port map (
+     clk_i => clk_i,
+     ps2_data_i => ps2_data_i,
+     ps2_clk_i => ps2_clk_i,
+     
+      digit_i => digit_i
+      );
+   u3: display port map (
+        clk_i => clk_i,
+       
+       
+         digit_i => digit_i,
+        led7_an_o => led7_an_o,
+        led7_seg_o => led7_seg_o
+    );
+ 
+process
+begin 
+clk_i <= not(clk_i);
+wait for 5 ns;
+end process;  
+
+ps2_clk_process : process
+    begin
+        -- Zegar PS2 działa na opadającym zboczu, więc zmieniamy stan co 33.3 us (30 kHz)
+        wait for 33.3 us;  -- 30 kHz
+        ps2_clk_i <= not(ps2_clk_i);
+    end process;
+
+process
+begin
+
+wait for 16.65 us;
+
+-- start bit 1
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 1
+-- start bit 2
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 2
+-- start bit 3
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 3
+-- start bit 4
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+-- stop bit 4
+
+--ps2_data_i <= '1';
+--wait for 66.6 us;
+--ps2_data_i <= '1';
+--wait for 66.6 us;
+--ps2_data_i <= '1';
+--wait for 66.6 us;
+--ps2_data_i <= '1';
+--wait for 66.6 us;
+--ps2_data_i <= '1';
+--wait for 66.6 us;
+--ps2_data_i <= '1';
+--wait for 66.6 us;
+--ps2_data_i <= '1';
+--wait for 66.6 us;
+--ps2_data_i <= '1';
+--wait for 66.6 us;
+--ps2_data_i <= '1';
+--wait for 66.6 us;
+--ps2_data_i <= '1';
+--wait for 66.6 us;
+--ps2_data_i <= '1';
+--wait for 66.6 us;
+--ps2_data_i <= '1';
+--wait for 66.6 us;
+
+
+
+-- bit 1 start
+
+
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 1
+-- start bit 2
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 2
+-- start bit 3
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 3
+-- start bit 4
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+-- stop bit 4
+
+
+
+
+-- start bit 1
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 1
+-- start bit 2
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 2
+-- start bit 3
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 3
+-- start bit 4
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+-- stop bit 4
+
+
+
+
+
+
+
+-- start bit 1
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 1
+-- start bit 2
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 2
+-- start bit 3
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 3
+-- start bit 4
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+-- stop bit 4
+
+----------------------------------
+
+-- bit 1 start
+
+
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 1
+-- start bit 2
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 2
+-- start bit 3
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 3
+-- start bit 4
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+-- stop bit 4
+
+
+-- start bit 1
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 1
+-- start bit 2
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 2
+-- start bit 3
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 3
+-- start bit 4
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+-- stop bit 4
+
+--------------------
+
+
+-- start bit 1
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 1
+-- start bit 2
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 2
+-- start bit 3
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 3
+-- start bit 4
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+-- stop bit 4
+
+----aaaaaaaaaaaaaaaaaaa
+
+
+
+-- start bit 1
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 1
+-- start bit 2
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 2
+-- start bit 3
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 3
+-- start bit 4
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+-- stop bit 4
+
+
+-- bit 1 start
+
+
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 1
+-- start bit 2
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 2
+-- start bit 3
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 3
+-- start bit 4
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+-- stop bit 4
+
+
+
+---asdadad
+
+
+
+-- start bit 1
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 1
+-- start bit 2
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 2
+-- start bit 3
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 3
+-- start bit 4
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+-- stop bit 4
+
+
+---gffgfds
+
+
+
+
+-- bit 1 start
+
+
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 1
+-- start bit 2
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 2
+-- start bit 3
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+-- stop bit 3
+-- start bit 4
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '0';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 66.6 us;
+ps2_data_i <= '1';
+wait for 49.95 us;
+-- stop bit 4
+
+
+
+
+
+end process;
+    
+    
+end Behavioral;
